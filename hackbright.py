@@ -2,6 +2,8 @@
 
 A front-end for a database that allows users to work with students, class
 projects, and the grades students receive in class projects.
+
+Author: Shai Wilson, Shijie Feng
 """
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -71,7 +73,7 @@ def get_grade_by_github_title(github, title):
 
     db_cursor = db.session.execute(QUERY, {'github': github, 'title': title})
     result = db_cursor.fetchone()
-    
+
     print "Successfully query %s given github name %s and project title %s." % (
             result[0], github, title) 
 
