@@ -36,6 +36,7 @@ def make_new_student(first_name, last_name, github):
     Given a first name, last name, and GitHub account, add student to the
     database and print a confirmation message.
     """
+
     QUERY = """
             INSERT INTO students VALUES (:first_name, :last_name, :github)
     """
@@ -45,17 +46,34 @@ def make_new_student(first_name, last_name, github):
 
     db.session.commit()
 
-    print "Successfull added student: %s %s" % (first_name. last_name)
+    print "Successfully added student: %s %s" % (first_name, last_name)
 
 
 def get_project_by_title(title):
     """Given a project title, print information about the project."""
-    pass
 
+    QUERY = """SELECT description FROM projects WHERE title = :title"""
+    db_cursor = db.session.execute(QUERY, {'title': title})
+    result = db_cursor.fetchone()
+
+    print "Successfully query project by title: %s description: %s" % (title, result)
 
 def get_grade_by_github_title(github, title):
     """Print grade student received for a project."""
-    pass
+    
+    QUERY = """
+        SELECT grade
+        FROM grades
+        JOIN students ON (student_github = github)
+        JOIN projects ON (project_title = title) 
+        WHERE github = :github AND title = :title
+    """
+
+    db_cursor = db.session.execute(QUERY, {'github': github, 'title': title})
+    result = db_cursor.fetchone()
+    
+    print "Successfully query %s given github name %s and project title %s." % (
+            result[0], github, title) 
 
 
 def assign_grade(github, title, grade):
@@ -80,6 +98,17 @@ def handle_input():
         if command == "student":
             github = args[0]
             get_student_by_github(github)
+
+        # expected : project_name Markov
+        # output : get_project_by_title
+        elif command == "project_name":
+            project_name = args[0]
+            get_project_by_title(project_name)
+
+        elif command == "get_grade":
+            github = args[0]
+            title = args[1]
+            get_grade_by_github_title(github, title)
 
         elif command == "new_student":
             first_name, last_name, github = args   # unpack!
